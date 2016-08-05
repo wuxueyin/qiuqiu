@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<style>
+	*{
+		margin: 0;
+		padding: 0;
+	}
+	.hei{
+		width: 50px;
+		height: 50px;
+		border-radius: 50%;
+		background: #000;
+		position: absolute;
+		top: 0;
+		left: 0;
+		text-align: center;
+		line-height: 50px;
+		color: #fff;
+		/* -webkit-box-shadow: inset 1px 1px 30px #000; */
+	}
+</style>
+<body>
+	<div class="hei">இдஇ</div>
+</body>
+<script>
+	flag = null;
+	var boss = function(ele){
+		this.ele = document.querySelector(ele);
+		this.down();
+		this.move();
+		this.up();
+	}
+	boss.prototype={
+		down:function(){
+			var that = this;
+			this.ele.addEventListener("mousedown",function(e){
+				var event = e || window.event;
+				that.x = event.clientX-that.ele.offsetLeft;
+				that.y = event.clientY-that.ele.offsetTop;
+				console.log(that.x);
+				flag = !0;
+				console.log(flag);
+			})
+		},
+		move:function(){
+				var that = this;
+				document.addEventListener("mousemove",function(e){
+					if(flag){
+						var event = e || window.event;
+						that.left = event.clientX-that.x,
+						that.top = event.clientY-that.y;
+						maxW=document.documentElement.clientWidth-that.ele.offsetWidth;
+			           	maxH=document.documentElement.clientHeight-that.ele.offsetHeight;
+			            if(that.left<=0)that.left=0;
+			            if(that.left>maxW)that.left=maxW;
+			            if(that.top<=0)that.top=0;
+			            if(that.top>maxH)that.top=maxH;
+			            that.ele.style.cssText = "left: "+that.left+"px;top: "+that.top+"px;";
+					}
+				})
+		},
+		up:function(){
+			var that = this;
+			document.addEventListener("mouseup",function(){
+				flag = !1;
+			})
+		}
+	}
+	var bos = new boss(".hei");
+
+
+
+	var qiuqiu = function(left,top,width,height,color){
+		this.left = left;
+		this.top = top;
+		this.width = width;
+		this.height = height;
+		this.color = color;
+		this.radiu = this.width/2;
+		this.into();
+		this.render();
+		this.move();
+	}
+	//原型
+	qiuqiu.prototype={
+		into:function(){
+			this.box = document.createElement("div");
+			document.body.appendChild(this.box);
+		},
+		render:function(){
+			this.box.style.cssText = "position: absolute;left:"+this.left+"px;top:"+this.top+"px;width:"+this.width+"px;height:"+this.height+"px;background: #fff;border-radius: 50%;opacity: 0.5;-webkit-box-shadow: inset 1px 1px "+3*this.width/5+"px "+this.color+";border: 1px solid "+this.color+";";
+		},
+		move:function(){
+			var that = this;
+			var l = suiji(-5,5),
+				t = suiji(-5,5);
+			setInterval(function(){
+				if(that.left <= 0){
+					l = -l;
+				}else if(that.left >= window.innerWidth-that.width-3){
+					l = -l;
+				}
+				if(that.top <= 0){
+					t = -t;
+				}else if(that.top >= window.innerHeight-that.height-3){
+					t = -t;
+				}
+				that.left += l;
+				that.top += t;
+				that.render();
+				/*var xx = (that.box.offsetLeft+that.box.offsetHeight/2) - (bos.ele.offsetLeft+bos.ele.offsetHeight/2);
+				var yy = (that.box.offsetTop+that.box.offsetHeight/2) - (bos.ele.offsetTop+bos.ele.offsetHeight/2);
+				var zz = that.box.offsetHeight/2 + bos.ele.offsetHeight/2;
+				if(Math.pow(xx,2)+Math.pow(yy,2)<=Math.pow(zz,2)){
+					alert("游戏结束")
+					location.reload()
+				}*/
+			},3)
+		}
+	}
+	function suiji(max,min){
+		var num = Math.floor(Math.random()*(max-min))+min;
+		if( num == 0 ){
+			return suiji(max,min);
+		}
+		return num;
+	}
+		document.onclick = function(){
+			for(var i=0; i<30; i++){
+				var h = window.innerHeight-200,
+					w = window.innerWidth-200,
+					wh = suiji(200,50);
+				var arr = ["red","yellow","blue","pink","green","#CC9933","#9900CC","#99FFCC","#0099FF","#FFCCFF","#FF00FF","#CC0000","#cccccc","#CC66FF","#666699"],
+					len = arr.length,
+					col = suiji(len,0);
+				var qq = new qiuqiu(suiji(w,100),suiji(h,100),wh,wh,arr[col]);//left,top,width,height,color
+			}
+		}
+</script>
+</html>
